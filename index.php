@@ -1,38 +1,3 @@
-<?php
-session_start();
-
-// Initialize the task list if it doesn't exist
-if (!isset($_SESSION['tasks'])) {
-    $_SESSION['tasks'] = [];
-}
-
-// Handle form submissions for Create, Update, and Delete
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action'])) {
-        $action = $_POST['action'];
-
-        if ($action === 'create') {
-            $task = $_POST['task'];
-            if (!empty($task)) {
-                $_SESSION['tasks'][] = $task;
-            }
-        } elseif ($action === 'update') {
-            $index = $_POST['index'];
-            $task = $_POST['task'];
-            if (isset($_SESSION['tasks'][$index])) {
-                $_SESSION['tasks'][$index] = $task;
-            }
-        } elseif ($action === 'delete') {
-            $index = $_POST['index'];
-            if (isset($_SESSION['tasks'][$index])) {
-                unset($_SESSION['tasks'][$index]);
-                $_SESSION['tasks'] = array_values($_SESSION['tasks']); // Re-index the array
-            }
-        }
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,44 +8,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <header>
+        <img src="images/anime-banner.jpg" alt="Anime Banner" class="banner">
         <div class="logo">Anime To-do</div>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="index.php">App</a></li>
+                <li><a href="#home">Home</a></li>
+                <li><a href="CreateBtn.php">Manage Tasks</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
-        <h1>Anime To-do App</h1>
-        <img src="images/anime-placeholder.jpg" alt="Anime Banner" class="banner">
+    <main id="home">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to Anime To-do App</h1>
+                <p>Organize your tasks with your favorite anime characters!</p>
+            </div>
+        </section>
 
-        <!-- Create Task Form -->
-        <form action="index.php" method="post">
-            <input type="hidden" name="action" value="create">
-            <input type="text" name="task" placeholder="New Task">
-            <button type="submit">Add Task</button>
-        </form>
+        <section id="features">
+            <h2>Features</h2>
+            <div class="feature-list">
+                <div class="feature-item" style="background-image: url('images/feature1.jpg');">
+                    <div class="feature-item-content">
+                        <h3>Create Tasks</h3>
+                        <p>Easily add new tasks to stay on top of your to-do list.</p>
+                        <a href="CreateBtn.php" class="cta-button">Manage Tasks</a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <!-- Task List -->
-        <ul>
-            <?php foreach ($_SESSION['tasks'] as $index => $task): ?>
-                <li>
-                    <form action="index.php" method="post" style="display: inline;">
-                        <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="index" value="<?php echo $index; ?>">
-                        <input type="text" name="task" value="<?php echo htmlspecialchars($task); ?>">
-                        <button type="submit">Update</button>
-                    </form>
-                    <form action="index.php" method="post" style="display: inline;">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="index" value="<?php echo $index; ?>">
-                        <button type="submit">Delete</button>
-                    </form>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <section class="spacer-section">
+            <!-- This section creates space between other sections -->
+        </section>
     </main>
+
+    <footer id="contact">
+        <p>Contact us at <a href="mailto:info@animetodo.com">info@animetodo.com</a></p>
+        <div class="social-media">
+            <a href="#">Facebook</a>
+            <a href="#">Twitter</a>
+            <a href="#">Instagram</a>
+        </div>
+    </footer>
 </body>
 </html>
