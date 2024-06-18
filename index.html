@@ -1,65 +1,75 @@
+<?php
+session_start();
+
+// Function to add a new task to session
+function createTask($task_name) {
+    if (!isset($_SESSION['tasks'])) {
+        $_SESSION['tasks'] = [];
+    }
+    $_SESSION['tasks'][] = ['name' => $task_name, 'done' => false];
+}
+
+// Function to delete a task from session
+function deleteTask($task_id) {
+    if (isset($_SESSION['tasks'][$task_id])) {
+        unset($_SESSION['tasks'][$task_id]);
+        $_SESSION['tasks'] = array_values($_SESSION['tasks']); // Re-index the array
+    }
+}
+
+// Handle form submission to create or delete tasks
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['task_name'])) {
+        createTask($_POST['task_name']);
+    } elseif (isset($_POST['delete_task_id'])) {
+        deleteTask($_POST['delete_task_id']);
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime To-do App</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Manage Tasks</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="logo">Anime To-do</div>
         <nav>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#screenshots">Screenshots</a></li>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="CreateBtn.php">Manage Tasks</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <main id="home">
-        <section class="hero">
-            <img src="images/anime-banner.jpg" alt="Anime Banner">
-            <h1>Welcome to Anime To-do App</h1>
-            <p>Organize your tasks with your favorite anime characters!</p>
-            <a href="index.php" class="cta-button">Start Your To-do Journey</a>
+    <main>
+        <section>
+            <h1>Create Task</h1>
+            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+                <label for="task_name">Task Name:</label>
+                <input type="text" id="task_name" name="task_name" required>
+                <button type="submit">Add Task</button>
+            </form>
         </section>
 
-        <section id="features">
-            <h2>Features</h2>
-            <div class="feature-list">
-                <div class="feature-item">
-                    <img src="images/create-task.png" alt="Create Task">
-                    <h3>Create Tasks</h3>
-                    <p>Easily add new tasks to stay on top of your to-do list.</p>
-                </div>
-                <div class="feature-item">
-                    <img src="images/manage-task.png" alt="Manage Task">
-                    <h3>Manage Tasks</h3>
-                    <p>Update and manage your tasks with a few clicks.</p>
-                </div>
-                <div class="feature-item">
-                    <img src="images/delete-task.png" alt="Delete Task">
-                    <h3>Delete Tasks</h3>
-                    <p>Remove tasks that are completed or no longer needed.</p>
-                </div>
-                <div class="feature-item">
-                    <img src="images/anime-theme.png" alt="Anime Theme">
-                    <h3>Anime-Themed Interface</h3>
-                    <p>Enjoy a beautiful interface featuring your favorite anime characters.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="screenshots">
-            <h2>Screenshots</h2>
-            <div class="screenshot-gallery">
-                <img src="images/screenshot1.jpg" alt="Screenshot ">
-                <img src="images/screenshot2.jpg" alt="Screenshot 2">
-                <img src="images/screenshot3.jpg" alt="Screenshot 3">
-            </div>
+        <section>
+            <h2>Tasks Added:</h2>
+            <ul>
+                <?php
+                if (isset($_SESSION['tasks']) && !empty($_SESSION['tasks'])) {
+                    foreach ($_SESSION['tasks'] as $id => $task) {
+                        echo '<li>' . htmlspecialchars($task['name']) . ' <form style="display:inline;" action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="post"><button type="submit" name="delete_task_id" value="' . $id . '">Delete</button></form></li>';
+                    }
+                } else {
+                    echo '<li>No tasks added yet.</li>';
+                }
+                ?>
+            </ul>
         </section>
     </main>
 
